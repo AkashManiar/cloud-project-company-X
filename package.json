@@ -3,8 +3,7 @@
     "main": "server.js",
     "type": "module",
     "scripts": {
-        "dev": "nodemon --exec babel-node ./server.js",
-        "build": "node --exec babel-node ./server.js"
+        "dev": "nodemon --exec babel-node ./server.js"
     },
     "dependencies": {
         "@babel/cli": "^7.8.4",
