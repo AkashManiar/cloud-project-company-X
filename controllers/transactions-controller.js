@@ -1,3 +1,4 @@
+import { db } from "../db/index.js"
 import { Transactions } from '../models/Transactions.js'
 import { CustomerAccount } from "../models/CustomerAccount.js"
 
@@ -49,47 +50,57 @@ const TransactionsController = {
                 })
                 .then(account => {
                     if (account && account !== {}) {
-                        const newBalance = account.balance - body.amount 
-                        if (newBalance < 0) {
-                            res.send({
-                                success: false,
-                                isError: false,
-                                message: 'Account balance cannot go below 0. Please check transaction amount.'
+                            db.transaction().then(t => {
+                                Transactions.create(
+                                    transaction, 
+                                    { transaction: t }
+                                ).then(() => {
+                                    const newBalance = account.balance - body.amount 
+                                    if (newBalance < 0) {
+                                        // Balance is less than 0 hence transaction gets rolled back
+                                        t.rollback()
+                                        res.send({
+                                            success: false,
+                                            isError: false,
+                                            message: 'Account balance cannot go below 0. Please check transaction amount.'
+                                        })
+                                    } else {
+                                        const updatedAccObj = {
+                                            ...account,
+                                            balance: newBalance
+                                        }
+                                        CustomerAccount.update(updatedAccObj, {
+                                            where: {
+                                                account_no: body.account_no
+                                            } 
+                                        }).then(() => {
+                                            t.commit();
+                                            res.send({
+                                                success: true,
+                                                isError: false,
+                                                message: 'Successfully made a new transaction.'
+                                            })
+                                        }).catch(err3 => {
+                                            t.rollback();
+                                            console.log('__ERR3__', err3);
+                                                res.send({
+                                                    success: false,
+                                                    isError: true,
+                                                    message: 'Some error occurred in updating account details.'
+                                                })
+                                            })
+                                        }
+                                    }).catch(err1 => {
+                                        t.rollback();
+                                        console.log('__ERR1__', err1);
+                                        res.send({
+                                            success: true,
+                                            isError: true,
+                                            err: err1,
+                                            message: 'Error in creating transaction.'
+                                        })
+                                    })
                             })
-                        }
-                        const updatedAccObj = {
-                            ...account,
-                            balance: newBalance
-                        }
-                        CustomerAccount.update(updatedAccObj, {
-                            where: {
-                                account_no: body.account_no
-                            }
-                        }).then(() => {
-                            Transactions.create(transaction)
-                            .then(() => {
-                                res.send({
-                                    success: true,
-                                    isError: false,
-                                    message: 'Successfully made a new transaction.'
-                                })
-                            })
-                            .catch(err1 => {
-                                res.send({
-                                    success: true,
-                                    isError: true,
-                                    err: err1,
-                                    message: 'Error in creating transaction.'
-                                })
-                            }) 
-                        }).catch(err3 => {
-                            console.log('__ERR3__', err3);
-                            res.send({
-                                success: false,
-                                isError: true,
-                                message: 'Some error occurred in updating account details.'
-                            })
-                        })
                     } else {
                         res.send({
                             success: false,
@@ -105,7 +116,6 @@ const TransactionsController = {
                         message: 'Error in finding account.'
                     })
                 })
-                
             } else {
                 res.send({
                     success: false,

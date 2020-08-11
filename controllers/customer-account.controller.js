@@ -59,6 +59,7 @@ const CustomerAccountController = {
     },
     editCustomer: (req, res, message="", success=false) => {
         const isMessage = typeof message === 'string'
+        
         let balance = req.body.balance || 0
         if (balance && balance < 0) {
             balance = 0
