@@ -1,7 +1,9 @@
-export const credentials = {
+const credentials = {
     dialect: 'mysql',
-    database: "A4_Cloud_Computing",
+    database: "company_x",
     username: "admin",
     password: "mihirpatel",
-    host: "database-1.cu5vlmpnkcu5.us-east-1.rds.amazonaws.com",
+    host: "cloud-project-company-x.cu5vlmpnkcu5.us-east-1.rds.amazonaws.com",
 }
+
+export default credentials

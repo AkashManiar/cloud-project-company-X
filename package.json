@@ -1,6 +1,7 @@
 {
     "name": "node-api",
     "main": "server.js",
+    "type": "module",
     "scripts": {
         "dev": "nodemon --exec babel-node ./server.js",
         "build": "node --exec babel-node ./server.js"

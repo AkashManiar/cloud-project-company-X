@@ -2,31 +2,22 @@ import sequelize from 'sequelize'
 const { Sequelize } = sequelize
 import { db } from "../db/index.js"
 
-export const CustomerAccount = db.define("customer_account", {
-    account_no: {
+export const Transactions = db.define("transaction", {
+    transaction_id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
     }, 
-    customer_name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    address: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    phone_number: {
+    account_no: {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
-    email: {
+    vendor_name: {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    balance: {
+    amount: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        allowNull: false,
     }
 }, {
     timestamps: false

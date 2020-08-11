@@ -1,112 +1,101 @@
+import { CustomerAccount } from "../models/CustomerAccount.js"
 
 const CustomerAccountController = {
     getHomePage: (req, res) => {
         res.render('homepage')
+    },
+    getCustomers: (req, res, message="", success=false) => {
+        const isMessage = typeof message === 'string'
+        CustomerAccount.findAll({}).then(
+            customers => {
+                res.render('customerList', { success, message: isMessage ? message : "", customers})
+            }
+        ).catch(err => {
+            console.log('__Error_',err);
+            res.render('customerList', { success, message: isMessage ? message : "Error occurred in fetching customer data."})
+        })
+    },
+    addCustomerGET: (req, res, message, success=false) => {
+        const isMessage = typeof message === 'string'
+        res.render('addCustomer', { success, message: isMessage ? message : ""})
+    },
+    addCustomerPOST: (req, res) => {
+        if (req.body != {} && !!req.body) {
+            let balance = req.body.balance || 0
+            if (balance && balance < 0) {
+                balance = 0
+            }
+            const query = {
+                'customer_name' : req.body.customer_name,
+                'address' : req.body.address ? req.body.address : '',
+                'phone_number' : req.body.phone_number,
+                'email' : req.body.customer_email,
+                'balance' : balance
+            }
+        CustomerAccount.create(query)
+            .then(customer => {
+                CustomerAccountController.addCustomerGET(req, res, 'Successfully added customer details and created acc, click on view customers to get customers..', true)
+            }).catch(err => {
+                console.log('__Error__', err);
+                CustomerAccountController.addCustomerGET(req, res, 'Some error occurred while adding customers.', false)
+            })
+        } else {
+            CustomerAccountController.addCustomerGET(req, res, 'Parameters are not as per requirement.', false)
+        }
+    },
+    deleteCustomer: (req, res) => {
+        const account_no = req.params.accountNo
+        CustomerAccount.destroy({
+            where:{
+                account_no
+            }
+        })
+        .then(() => {
+            CustomerAccountController.getCustomers(req, res, 'Successfully deleted the customer from records.', true)
+        }).catch(err => {
+            console.log('__Delete Err__', err);
+            CustomerAccountController.getCustomers(req, res, 'Some error occurred in deleting the customer.', false)
+        })
+    },
+    editCustomer: (req, res, message="", success=false) => {
+        const isMessage = typeof message === 'string'
+        let balance = req.body.balance || 0
+        if (balance && balance < 0) {
+            balance = 0
+        }
+        const customer = {
+            'account_no': req.body.account_no,
+            'customer_name' : req.body.customer_name,
+            'address' : req.body.address ? req.body.address : '',
+            'phone_number' : req.body.phone_number,
+            'email' : req.body.customer_email,
+            'balance' : balance
+        }
+        res.render('editCustomer', { success, message: isMessage ? message : "", customer})
+    },
+    editCustomerDetails: (req, res) => {
+        const account_no = req.params.accountNo
+        let balance = req.body.balance || 0
+        if (balance && balance < 0) {
+            balance = 0
+        }
+        const query = {
+            'customer_name' : req.body.customer_name,
+            'address' : req.body.address ? req.body.address : '',
+            'phone_number' : req.body.phone_number,
+            'email' : req.body.customer_email,
+            'balance' : balance
+        }
+        CustomerAccount.update(
+            query,
+            { where: { account_no } }
+        ).then(() => {
+            CustomerAccountController.getCustomers(req, res, 'Successfully edited customer details.', true)
+        }).error(err => {
+            console.log('__Err__', err);
+            CustomerAccountController.editCustomer(req, res, 'Failed to update customer details please try again.', false)
+        })
     }
-    // getJobs: (req, res) => {
-    //     Jobs.findAll({
-    //         attributes: ['jobName', 'partId', 'qty']
-    //     }).then(
-    //         jobs => {
-    //             res.json({success: true, jobs})
-    //         }
-    //     ).catch(err => {
-    //         console.log("-------------------------------------------")
-    //         console.log(err)
-    //         console.log("-------------------------------------------")
-    //         res.json({success: false, code: err.original.code, message: "Jobs table does not exists, please add data to 'Jobs' table first"})
-    //     })
-    // },
-
-    // getJobIndex: (job_name, part_id) => {
-    //     let isJobFound = false
-    //     let index = -1
-    //     for (let i=0; i < jobs446.length; i++) {
-    //         let job = jobs446[i]
-    //         if (job.jobName == job_name || job.partId == part_id) {
-    //             isJobFound = true
-    //             index = i
-    //         }
-    //     }
-    //     return index
-    // },
-
-    // getQuantity: (req,res) => {
-    //     let job_name = req.query.jobName
-    //     let part_id = req.query.partId
-        
-    //     if (job_name && part_id) {
-    //         const query = {'jobName': job_name, "partId": part_id}
-            
-    //         Jobs.findOne({
-    //             where: query
-    //         }).then(jobs => {
-    //             if (jobs) {
-    //                 res.json({success: true, jobs})
-    //             }
-    //         }).catch(err2 => {
-    //             res.json({ success: false, code: err.original.code, message: "Error in finding record" })
-    //         })
-    //     } else {
-    //         res.json({success: false, message: "Oops! some error with updating data"}) 
-    //     }
-    // },
-    
-    // addPart: (req, res) => {
-    //     if (req.body != {} && !!req.body) {
-    //         const query = {'jobName': req.body.job_name, "partId": req.body.part_id}
-
-    //         Jobs.findAll({
-    //             where: query,
-    //         }).then(
-    //             jobs => {
-    //                 if (jobs.length == 0) {
-    //                     query.qty = req.body.quantity 
-    //                     Jobs.create(query)
-    //                         .then(data => {
-    //                             res.json({success: true, message: "Successfully added your job to database"})
-    //                         }).catch(err1 => {
-    //                             res.json({ success: false, code: err.original.code, message: "Error in adding data" })  
-    //                         })
-    //                 } else {
-    //                     res.json({success: false, message: "Provided data already exist in database"})
-    //                 }
-    //             }
-    //         ).catch(err => {
-    //             res.json({ success: false, code: err.original.code, message: "Error in finding data" })
-    //         })
-    //     } else {
-    //         res.json({success: false, message: "Oops! some error with adding data"})
-    //     }
-    // },
-
-    // updatePart: (req, res) => {
-    
-    //     if (req.body != {} && !!req.body && req.body.job_name && req.body.part_id) {
-    //         const query = {'jobName': req.body.job_name, "partId": req.body.part_id}
-            
-    //         Jobs.findOne({
-    //             where: query
-    //         }).then(job => {
-    //             if (job) {
-    //                 console.log('HERE!!');
-    //                 query.qty = req.body.quantity
-    //                 job.update(
-    //                     { qty: req.body.quantity },
-    //                     { where: query }
-    //                 ).then(t =>
-    //                     res.json({ success: true, message: "Successfully updated jobs record" })
-    //                 ).catch(err => {
-    //                     res.json({ success: false, code: err.original.code, message: "Error in updating record" })
-    //                 })
-    //             }
-    //         }).catch(err2 => {
-    //             res.json({ success: false, code: err.original.code, message: "Error in finding record" })
-    //         })
-    //     } else {
-    //         res.json({success: false, message: "Oops! some error with updating data"}) 
-    //     }
-    // }
 }
 
-module.exports = CustomerAccountController
+export default CustomerAccountController

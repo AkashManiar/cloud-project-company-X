@@ -1,0 +1,58 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</head>
+<div class="container">
+    <h2>Company X</h2>
+    <br>
+    <form action="/">
+        <button type= "submit" class="btn btn-info">Go to main page</button>
+    </form>
+    <form action="/getCustomers">
+        <button type= "submit" class="btn btn-info">View customers</button>
+    </form>
+    <br>
+    <h4>Edit Account: <%= customer.account_no %></h4>
+    <br>
+
+<br>
+<% if(message != '') { %>
+    <% if (success) {%>
+        <div class="alert alert-success">
+            <%= message %>
+        </div>
+    <% } else {%>
+        <div class="alert alert-danger">
+            <%= message %>
+        </div>
+    <% } %>
+<% }%>
+
+<row>
+    <col md="4">
+    <form action="/editCustomer/<%= customer.account_no%>" method="POST">
+        <div class="form-group">
+            <label for="customer_name">Customer Name</label>
+            <input type="text" required class="form-control" name="customer_name" value="<%= customer.customer_name%>" placeholder="Please enter full name of the customer.">
+        </div>
+        <div class="form-group">
+            <label for="customer_email">Email</label>
+            <input type="email" required class="form-control" name="customer_email" value="<%= customer.email%>" placeholder="Please enter full name of the customer.">
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" required class="form-control" name="address" value="<%= customer.address%>" placeholder="Please enter your address here.">
+        </div>
+        <div class="form-group">
+            <label for="phone_number">Phone Number</label>
+            <input type="number" required class="form-control" name="phone_number" value="<%= customer.phone_number%>" placeholder="Please enter Phone number.">
+        </div>
+        <div class="form-group">
+            <label for="balance">Balance</label>
+            <input type="number" class="form-control" name="balance" value="<%= customer.balance%>" placeholder="Please enter Balance amount.">
+        </div>
+        <button type="submit" class="btn btn-success">Edit</button>
+    </form>
+    </col>
+</row>
+</div>

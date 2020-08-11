@@ -1,16 +1,41 @@
-import { Router } from "express"
-import bodyParser from "body-parser"
-import {
-    getHomePage
-} from "../controllers/customer-account.controller"
+import express from 'express'
+import CustomerAccControllers from '../controllers/customer-account.controller.js'
+import TransactionControllers from '../controllers/transactions-controller.js'
 
+const { Router } = express
+
+const  {
+    getHomePage,
+    addCustomerGET,
+    addCustomerPOST,
+    getCustomers,
+    deleteCustomer,
+    editCustomer,
+    editCustomerDetails
+} = CustomerAccControllers
+
+const {
+    deleteTransaction,
+    makeTransaction,
+    getTransactions
+} = TransactionControllers
 
 const router = Router()
-
-// pass jsonParser this as second param where u make request other than get
-const jsonParser = bodyParser.json()
 
 // HomePage
 router.get('/', getHomePage)
 
-module.exports = router
+// Customer account routes
+router.get('/addCustomer', addCustomerGET)
+router.get('/getCustomers', getCustomers)
+router.post('/addCustomer', addCustomerPOST)
+router.get('/deleteCustomer/:accountNo', deleteCustomer)
+router.post('/editCustomer', editCustomer)
+router.post('/editCustomer/:accountNo', editCustomerDetails)
+
+// Transactions
+router.get('/getTransactions', getTransactions)
+router.post('/makeTransaction', makeTransaction)
+router.get('/deleteTransaction/:transactionId', deleteTransaction)
+
+export default router

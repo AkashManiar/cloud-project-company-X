@@ -1,0 +1,92 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</head>
+<style>
+    table, th, td{
+        padding: 10px;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+<body>
+    <div class="container">
+        <form action="/">
+            <button type= "submit" class="btn btn-info">Go to main page</button>
+        </form>
+        <br>
+        <h3>List of Customers registered with Bank:</h3>
+    <br>
+    <% if(message != '') { %>
+        <% if (success) {%>
+            <div class="alert alert-success">
+                <%= message %>
+            </div>
+        <% } else {%>
+            <div class="alert alert-danger">
+                <%= message %>
+            </div>
+        <% } %>
+    <% }%>
+    <% if(typeof customers != 'undefined'){ %>
+        <% if(customers.length === 0){ %>
+            <div class="alert alert-warning" role="alert">
+                There are no customers in list please add customer, by clicking Add Customer.
+            </div>
+        <% } else {%>
+            <row>
+                <col>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Customer Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Account Balance</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% customers.forEach(function(customer){ %>
+                                <tr>
+                                    <td> <%= customer.account_no %> </td>
+                                    <td> <%= customer.customer_name %> </td>
+                                    <td> <%= customer.email %> </td>
+                                    <td> <%= customer.phone_number %> </td>
+                                    <td> <%= customer.balance %> </td>
+                                    <td> 
+                                        <form class="d-inline" action="/editCustomer" method="POST">
+                                            <input name="account_no" value="<%= customer.account_no %>" hidden/>
+                                            <input name="customer_name" value="<%= customer.customer_name %>" hidden/>
+                                            <input name="customer_email" value="<%= customer.email %>" hidden/>
+                                            <input name="phone_number" value="<%= customer.phone_number %>" hidden/>
+                                            <input name="balance" value="<%= customer.balance %>" hidden/>
+                                            <input name="address" value="<%= customer.address %>" hidden/>
+                                            <button type="submit" class="btn btn-primary">Edit</button>
+                                        </form>
+                                        <form class="d-inline" action="/deleteCustomer/<%= customer.account_no %>">
+                                            <input type="submit" value="Delete" class="btn btn-danger">
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </col>
+            </row>
+        <% } %>
+    <% } %>
+    <div class="row">
+        <div class="col-md-3 offset-md-5">
+            <form action="/addCustomer">
+                <button type= "submit" class="btn btn-success">
+                    Add Customer
+                </button>
+            </form>
+        </div>
+    </div>
+    
+</body>
+</div>
+    
