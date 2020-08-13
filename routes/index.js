@@ -17,7 +17,8 @@ const  {
 const {
     deleteTransaction,
     makeTransaction,
-    getTransactions
+    getTransactions,
+    getItems
 } = TransactionControllers
 
 const router = Router()
@@ -37,5 +38,6 @@ router.post('/editCustomer/:accountNo', editCustomerDetails)
 router.get('/getTransactions', getTransactions)
 router.post('/makeTransaction', makeTransaction)
 router.get('/deleteTransaction/:transactionId', deleteTransaction)
+router.get('/getItems', getItems)
 
 export default router
